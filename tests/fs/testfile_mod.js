@@ -1,0 +1,2 @@
+// TESTFILE
+module.exports.foo = () => {};

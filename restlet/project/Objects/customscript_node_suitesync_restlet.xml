@@ -1,0 +1,26 @@
+<restlet scriptid="customscript_node_suitesync_restlet">
+  <deletefunction></deletefunction>
+  <description>The RESTlet that is used to supply go-suitesync with the ability to delete files</description>
+  <getfunction></getfunction>
+  <isinactive>F</isinactive>
+  <name>go-suitesync-restlet</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <postfunction>post</postfunction>
+  <putfunction></putfunction>
+  <scriptfile>[/SuiteScripts/go-suitesync/go-suitesync-restlet.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_node_suitesync_restlet">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>F</allroles>
+      <audslctrole>ADMINISTRATOR</audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>ERROR</loglevel>
+      <status>RELEASED</status>
+      <title>go-suitesync-restlet</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>

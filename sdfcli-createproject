@@ -1,0 +1,105 @@
+#!/bin/bash
+clear
+echo "This script creates a new SDF project in the current folder."
+echo "Make sure that you have read/write access to the current folder."
+echo ""
+echo "DISCLAIMER: The contents of the SDF CLI supplemental packages are"
+echo "provided as-is to help you install SDF SDK and set up your SDF"
+echo "projects.  The packages are only updated when a new version of SDF"
+echo "SDK is released.  The files are not officially supported Oracle"
+echo "products."
+echo ""
+echo "Select Project Type"
+echo "======================"
+echo "1. Account customization project"
+echo "2. SuiteApp project"
+echo ""
+echo "X. Exit"
+echo ""
+while read -n1 -p "Type 1, 2, or X: " ProjectType; do
+	case "$ProjectType" in
+		1) break;;
+		2) break;;
+		X) echo ""; exit;;
+		x) echo ""; exit;;
+		*) echo ""; echo ""; echo "ERROR: Invalid project type entry.  1, 2, or X was expected."; echo "";;
+	esac
+done
+echo ""
+if [ $ProjectType == "1" ]; then
+	read -p "Enter a project name: " ProjectName
+else
+	read -p "Enter your publisher ID: " PublisherID
+	read -p "Enter your project ID: " ProjectID
+	read -p "Enter your project name: " ProjectName
+	read -p "Enter your project version: " ProjectVersion
+fi
+if [ $ProjectType == "1" ]; then
+	mkdir $ProjectName
+	cd $ProjectName
+else
+	mkdir $PublisherID.$ProjectID
+	cd $PublisherID.$ProjectID
+fi
+mkdir Objects
+mkdir FileCabinet
+if [ $ProjectType = "1" ]; then
+	mkdir AccountConfiguration
+	mkdir FileCabinet/SuiteScripts
+	mkdir FileCabinet/SuiteScripts/\.attributes
+    mkdir FileCabinet/Templates
+    mkdir FileCabinet/Templates/E-mail\ Templates
+    mkdir FileCabinet/Templates/Marketing\ Templates
+else
+	mkdir InstallationPreferences
+	mkdir FileCabinet/SuiteApps
+	mkdir FileCabinet/SuiteApps/$PublisherID.$ProjectID
+	mkdir FileCabinet/SuiteApps/$PublisherID.$ProjectID/\.attributes
+fi
+echo "account=">\.sdf
+echo "email=">>\.sdf
+echo "role=3">>\.sdf
+echo "url=">>\.sdf
+echo "<deploy>">deploy.xml
+if [ $ProjectType = "1" ]; then
+    echo "    <configuration>">>deploy.xml
+    echo "        <path>~/AccountConfiguration/*</path>">>deploy.xml
+    echo "    </configuration>">>deploy.xml
+fi
+echo "    <files>">>deploy.xml
+if [ $ProjectType = "1" ]; then
+	echo "        <path>~/FileCabinet/SuiteScripts/*</path>">>deploy.xml
+else
+	echo "        <path>~/FileCabinet/SuiteApps/$PublisherID.$ProjectID/*</path>">>deploy.xml
+fi
+echo "    </files>">>deploy.xml
+echo "    <objects>">>deploy.xml
+echo "        <path>~/Objects/*</path>">>deploy.xml
+echo "    </objects>">>deploy.xml
+echo "</deploy>">>deploy.xml
+if [ $ProjectType = "1" ]; then
+	echo '<manifest projecttype="ACCOUNTCUSTOMIZATION">'>manifest.xml
+else
+	echo '<manifest projecttype="SUITEAPP">'>>manifest.xml
+	echo "    <publisherid>$PublisherID</publisherid>">>manifest.xml
+	echo "    <projectid>$ProjectID</projectid>">>manifest.xml
+fi
+echo "    <projectname>$ProjectName</projectname>">>manifest.xml
+if [ $ProjectType = "2" ]; then
+	echo "    <projectversion>$ProjectVersion<projectversion>">>manifest.xml
+fi
+echo "    <frameworkversion>1.0</frameworkversion>">>manifest.xml
+echo "    <dependencies>">>manifest.xml
+echo "        <features>">>manifest.xml
+echo '            <feature required="true">CUSTOMRECORDS</feature>'>>manifest.xml
+echo '            <feature required="true">SERVERSIDESCRIPTING</feature>'>>manifest.xml
+echo '            <feature required="false">CREATESUITEBUNDLES</feature>'>>manifest.xml
+echo "        </features>">>manifest.xml
+echo "    </dependencies>">>manifest.xml
+echo "</manifest>">>manifest.xml
+echo ""
+echo "End of script."
+echo "Edit the .sdf file in the new project folder to complete the process."
+echo "In the .sdf file, specify your account ID, login, and account URL."
+
+

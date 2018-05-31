@@ -1,0 +1,55 @@
+#!/bin/bash
+SDFSDK_PATH=/Users/jroehl/dev/go/src/github.com/jroehl/go-suitesync/.dependencies
+
+if [ ! -d "$SDFSDK_PATH" ]; then
+    clear
+    echo ""
+    echo "ERROR: SDF SDK was not found in $SDFSDK_PATH."
+    echo ""
+    echo "Edit this batch file and set the SDFSDK_PATH variable to"
+    echo "the correct path of your SDF SDK installation."
+    echo ""
+    echo "For more information about SDF SDK installation, see:"
+    echo "https://system.netsuite.com/app/help/helpcenter.nl?fid=section_1489072409.html"
+    exit 1
+fi
+
+SDFSDK_JAR=($SDFSDK_PATH/com.netsuite.ide.core_*.jar)
+if [ ! -f $SDFSDK_PATH/pom.xml ] || [ ! -e ${SDFSDK_JAR[0]} ]; then
+    clear
+    echo ""
+    echo "ERROR: A file was missing from $SDFSDK_PATH."
+    echo ""
+    echo "The following files are required to run SDF CLI:"
+    echo "    - axis.jar"
+    echo "    - com.netsuite.ide.core_<NetSuite-version>.jar"
+    echo "    - NetSuiteWebService.jar"
+    echo "    - pom.xml"
+    echo ""
+    echo "Check your SDF SDK installation path, and make sure that you"
+    echo "downloaded or extracted the files listed above."
+    echo ""
+    echo "For more information about SDF SDK installation, see:"
+    echo "https://system.netsuite.com/app/help/helpcenter.nl?fid=section_1489072409.html"
+    exit 1
+fi
+
+if [ ! -f $SDFSDK_PATH/axis.jar ] || [ ! -f $SDFSDK_PATH/NetSuiteWebService.jar ]; then
+    clear
+    echo ""
+    echo "ERROR: Could not find axis.jar or NetSuiteWebService.jar."
+    echo ""
+    echo "axis.jar or NetSuiteWebService.jar must be extracted from the"
+    echo "com.netsuite.ide.eclipse.ws JAR file and placed in the"
+    echo "$SDFSDK_PATH folder."
+    echo ""
+    echo "Oracle recommends using an unzip utility to extract the contents of the"
+    echo "com.netsuite.ide.eclipse.ws JAR file into the $SDFSDK_PATH folder."
+    echo ""
+    echo "For more information about SDF SDK installation, see:"
+    echo "https://system.netsuite.com/app/help/helpcenter.nl?fid=section_1489072409.html"
+    exit 1
+fi
+
+JAVA_HOME=/Users/jroehl/dev/go/src/github.com/jroehl/go-suitesync/.dependencies/jre1.8.0_171.jre/Contents/Home /Users/jroehl/dev/go/src/github.com/jroehl/go-suitesync/.dependencies/apache-maven-3.5.3/bin/mvn -f $SDFSDK_PATH/pom.xml exec:java -Dexec.args="$*"
+
