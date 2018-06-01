@@ -23,3 +23,8 @@
 
 # logs
 error.log
+
+
+# symlinks
+sdfcli
+sdfcli-createproject
