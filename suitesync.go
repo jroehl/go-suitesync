@@ -93,6 +93,10 @@ func main() {
 		Usage: "print the version",
 	}
 
+	app.Name = "suitesync"
+	app.Usage = "a netsuite filehandling cli"
+	app.Version = "0.0.1"
+
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:  "verbose, v",
