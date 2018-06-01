@@ -14,9 +14,6 @@ builds:
 # Archive customization
 archive:
   format: tar.gz
-  replacements:
-    amd64: 64-bit
-    darwin: macOS
   files:
     - init.sh
     - urls
