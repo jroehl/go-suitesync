@@ -3,26 +3,9 @@ package lib
 import (
 	"log"
 	"os"
+	"os/exec"
 	"path"
-	"runtime"
-
-	config "github.com/spf13/viper"
 )
-
-func InitConfig() {
-	// set path and type
-	config.AddConfigPath("./config")
-	config.SetConfigType("yaml")
-
-	// load the default config
-	defaultConfig := "config.default"
-	config.SetConfigName(defaultConfig)
-
-	if err := config.ReadInConfig(); err != nil {
-		log.Fatalf("Error while loading %s: %+v\n", defaultConfig, err)
-	}
-
-}
 
 func InitEnv() {
 	Creds = GetCredentials()
@@ -31,7 +14,12 @@ func InitEnv() {
 	SdfCli = path.Join(Dependencies, "sdfcli")
 	SdfCliCreateProject = path.Join(Dependencies, "sdfcli-createproject")
 	CliCache = path.Join(Dependencies, ".clicache")
-	Restlet = path.Join("restlet", "project")
+	Restlet = path.Join(Dependencies, "restlet", "project")
+
+	if _, err := os.Stat(Dependencies); os.IsNotExist(err) {
+		PrNoticeF("No \".dependencies\" directory found")
+		initDependencies()
+	}
 
 	if _, err := os.Stat(SdfCli); os.IsNotExist(err) {
 		log.Fatal(err)
@@ -42,29 +30,11 @@ func InitEnv() {
 	}
 }
 
-func InitDependencies() {
-	platform := ""
-	javaSubdir := ""
-	switch runtime.GOOS {
-	case "darwin":
-		platform = "linux-x64.tar.gz"
-	case "linux":
-		platform = "macosx-x64.tar.gz"
-		javaSubdir = "/Contents/Home"
-	default:
-		log.Fatalf("Only \"MacOS\" and \"Linux\" are supported - not \"%s\"", runtime.GOOS)
+func initDependencies() {
+	cmd := exec.Command("./init.sh")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
 	}
-
-	urls := config.GetStringMapString("urls")
-	PrNoticeF("Downloading dependencies")
-
-	for k, v := range urls {
-		if err := DownloadFile(k, v); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	// PrNoticeF("Download finished")
-
-	log.Fatal("foobar")
 }

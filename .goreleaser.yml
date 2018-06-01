@@ -1,4 +1,7 @@
 # .goreleaser.yml
+before:
+  hooks:
+    - make pack-restlet
 # Build customization
 builds:
   - binary: suitesync
@@ -16,4 +19,6 @@ archive:
     darwin: macOS
   files:
     - init.sh
+    - urls
+    - restlet.tar.gz
     - README.md

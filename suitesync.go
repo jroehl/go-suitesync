@@ -16,9 +16,7 @@ import (
 )
 
 func init() {
-	lib.InitConfig()
 	lib.InitEnv()
-	lib.InitDependencies()
 }
 
 // https://github.com/sanathkr/go-npm

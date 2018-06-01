@@ -18,8 +18,13 @@ run:
 release:
 	curl -sL https://git.io/goreleaser | bash
 
-build:
+build: clean
 	go build -o suitesync suitesync.go
 
+pack-restlet: clean
+	tar -czf restlet.tar.gz ./restlet/project
+
+clean:
+	rm -rf suitesync restlet.tar.gz
 # test-unit:
 # 	go test ./...

@@ -5,11 +5,11 @@ echo "Setting up wrapped clis"
 echo "(sdfcli, sdfcli-createproject)"
 echo ""
 
-function cmd_exists() {
+function cmd_exists {
   command -v "$cmd" >/dev/null 2>&1;
 }
 
-function assert_installed() {
+function assert_installed {
   for cmd in "$@"; do
     if ! cmd_exists "$cmd"; then
       echo "Command \"$cmd\" is needed but does not exist"
@@ -66,6 +66,8 @@ wget -nc --no-check-certificate --no-cookies --header "Cookie: oraclelicense=acc
 # download all paths from urls file check content-disposition header for name and skip if file exists
 wget -i $PARENT_DIR/urls --content-disposition -nc $_PROGRESS_OPT
 
+mv $PARENT_DIR/restlet.tar.gz $DEPS_DIR
+
 for tar in *.tar.gz; do tar -xf $tar; done
 for jar in *.jar; do unzip -nq $jar; done
 
@@ -90,7 +92,9 @@ sed -i -e "s|mvn|JAVA_HOME=$JAVA_HOME $MAVEN_BIN|" $DEPS_DIR/sdfcli
 # create symlinks
 rm -f $PARENT_DIR/sdfcli $PARENT_DIR/sdfcli-createproject
 ln -s $DEPS_DIR/sdfcli $PARENT_DIR/sdfcli
+chmod +x $DEPS_DIR/sdfcli $PARENT_DIR/sdfcli
 ln -s $DEPS_DIR/sdfcli-createproject $PARENT_DIR/sdfcli-createproject
+chmod +x $DEPS_DIR/sdfcli $PARENT_DIR/sdfcli-createproject
 
 # smoke test sdfcli installation and install maven dependencies
 if ! ./sdfcli >/dev/null 2>&1; then
