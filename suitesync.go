@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 	"regexp"
-	"runtime"
 	"time"
 
 	"github.com/jroehl/go-suitesync/restlet"
@@ -18,17 +16,9 @@ import (
 )
 
 func init() {
-	lib.Creds = lib.GetCredentials()
-
-	_, f, _, ok := runtime.Caller(0)
-	if !ok {
-		lib.PrFatalf("No caller information\n")
-	}
-	lib.Dependencies = path.Join(path.Dir(f), ".dependencies")
-	lib.SdfCli = path.Join(lib.Dependencies, "sdfcli")
-	lib.SdfCliCreateProject = path.Join(lib.Dependencies, "sdfcli-createproject")
-	lib.CliCache = path.Join(lib.Dependencies, ".clicache")
-	lib.Restlet = path.Join(path.Dir(f), "restlet", "project")
+	lib.InitConfig()
+	lib.InitEnv()
+	lib.InitDependencies()
 }
 
 // https://github.com/sanathkr/go-npm

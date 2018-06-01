@@ -18,5 +18,8 @@ run:
 release:
 	curl -sL https://git.io/goreleaser | bash
 
+build:
+	go build -o suitesync suitesync.go
+
 # test-unit:
 # 	go test ./...

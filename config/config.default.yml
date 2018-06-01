@@ -1,0 +1,7 @@
+---
+# URLS for dependency download
+urls:
+  "ns-ide-core.jar": https://system.netsuite.com/download/ide/update_18_1/plugins/com.netsuite.ide.core_2018.1.1.jar # netsuite sdf ide core
+  "ns-eclipse.jar": https://system.netsuite.com/download/ide/update_18_1/plugins/com.netsuite.ide.eclipse.ws_2018.1.1.jar # netsuite sdf eclipse package
+  "ns-core.tar.gz": https://system.netsuite.com/core/media/media.nl?id=95083164&c=NLCORP&h=37e6a602c5c4fc0fb3e3&_xt=.gz # netsuite core package
+  "maven.tar.gz": http://artfiles.org/apache.org/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.tar.gz # Maven
