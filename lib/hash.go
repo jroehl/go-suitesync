@@ -44,7 +44,7 @@ func DirContent(dir string, prefix string, hash bool, exclude bool) []Hash {
 		prefix = "/SuiteScripts"
 	}
 	err := filepath.Walk(dir, func(pt string, f os.FileInfo, err error) error {
-		if exclude && strings.HasPrefix(f.Name(), ".") || f.IsDir() {
+		if (exclude && (strings.HasPrefix(f.Name(), ".") || strings.Contains(pt, "/."))) || f.IsDir() {
 			return nil
 		}
 		h := ""

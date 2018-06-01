@@ -69,7 +69,7 @@ func execute(bin string, cmd string, flags string, prompt string, dir string, ig
 
 	if lib.IsVerbose {
 		fmt.Println()
-		lib.PrHeaderF("Executed command:\n")
+		lib.PrHeaderF("Executed command:")
 		fmt.Printf("  %s\n", cmdStr)
 		fmt.Println()
 	}

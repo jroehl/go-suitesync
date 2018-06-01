@@ -39,7 +39,7 @@ func Sync(src string, dest string, bidirectional bool) (al []string, ar []string
 	lf := lib.DirContent(src, dest, true, true)
 
 	if lib.IsVerbose {
-		lib.PrNoticeF("Sync (bidirectional=%t)\n", bidirectional)
+		lib.PrNoticeF("Sync (bidirectional=%t)", bidirectional)
 		lib.PrettyHash("Local files", lf)
 		lib.PrettyHash("Remote hash", rh)
 	}
@@ -126,7 +126,7 @@ func Sync(src string, dest string, bidirectional bool) (al []string, ar []string
 // UploadRestlet upload the restlet and do deployment
 func UploadRestlet() {
 	deployProject(lib.Restlet)
-	lib.PrNoticeF("Restlet (\"%s\") deployed\n", lib.Restlet)
+	lib.PrNoticeF("Restlet (\"%s\") deployed", lib.Restlet)
 }
 
 // ListFiles list the files of a specific directory
@@ -179,7 +179,7 @@ func UploadDir(src string, dest string) []string {
 func DownloadFiles(paths []string, dest string) (srcs []string, dests []string) {
 	if lib.IsVerbose {
 		lib.PrettyList("DownloadFiles", paths)
-		lib.PrNoticeF("Destination\t\t%s\n", dest)
+		lib.PrNoticeF("Destination\t\t%s", dest)
 	}
 	tmp := lib.MkTempDir()
 	pr := SdfCreateAccountCustomizationProject("temp", tmp)
@@ -240,7 +240,7 @@ func UpdateHashFile(src string, dest string, exclude bool, failed []string) (f [
 	restlet.Delete([]string{filepath.Clean(filepath.Join("", dest, lib.Creds.Hashfile))})
 
 	uf := UploadFiles(th, []string{hf}, "")[0]
-	lib.PrNoticeF("Uploaded\t\t%s\n", uf)
+	lib.PrNoticeF("Uploaded\t\t%s", uf)
 	lib.Remove(tmp)
 	lib.Remove(d)
 	return f
