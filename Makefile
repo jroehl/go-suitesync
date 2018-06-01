@@ -15,7 +15,7 @@ install:
 run:
 	go run suitesync.go
 
-release:
+release: clean
 	curl -sL https://git.io/goreleaser | bash
 
 build: clean
@@ -25,6 +25,6 @@ pack-restlet: clean
 	tar -czf restlet.tar.gz ./restlet/project
 
 clean:
-	rm -rf suitesync restlet.tar.gz
+	rm -rf suitesync restlet.tar.gz dist
 # test-unit:
 # 	go test ./...
