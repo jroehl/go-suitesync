@@ -1,0 +1,19 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - binary: suitesync
+    goos:
+      # - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+# Archive customization
+archive:
+  format: tar.gz
+  replacements:
+    amd64: 64-bit
+    darwin: macOS
+  files:
+    - init.sh
+    - README.md
