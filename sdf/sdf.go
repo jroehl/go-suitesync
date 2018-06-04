@@ -150,7 +150,7 @@ func sdfCreateProject(kind string, params ProjectParams) Project {
 	if lib.IsVerbose {
 		lib.PrNoticeF("Creating project\t\"%s %s\"\n", projectType, projectName)
 	}
-	execute(lib.SdfCliCreateProject, "", "", prompt, params.Path, false)
+	execute("sh", lib.SdfCliCreateProject, "", prompt, params.Path, false)
 
 	dir := filepath.Join(params.Path, projectName)
 
