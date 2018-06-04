@@ -123,34 +123,99 @@ func SdfCreateSuiteAppProject(name string, path string, id string, version strin
 
 // create an sdf project
 func sdfCreateProject(kind string, params ProjectParams) Project {
-	sequence := []string{}
 	fileBaseSuffix := ""
 	projectName := ""
 	projectType := ""
+	deployXML := ""
+	manifestXML := ""
+
+	os.MkdirAll(path.Join(params.Path, projectName, "Objects"), os.ModePerm)
 	switch kind {
 	case "1":
-		sequence = append(sequence, params.Name, "")
 		fileBaseSuffix = filepath.Join("FileCabinet", "SuiteScripts")
 		projectType = "ACCOUNTCUSTOMIZATION"
 		projectName = params.Name
+		os.MkdirAll(path.Join(params.Path, projectName, "AccountConfiguration"), os.ModePerm)
+		os.MkdirAll(path.Join(params.Path, projectName, fileBaseSuffix, ".attributes"), os.ModePerm)
+		os.MkdirAll(path.Join(params.Path, projectName, fileBaseSuffix, ".attributes"), os.ModePerm)
+		os.MkdirAll(path.Join(params.Path, projectName, "FileCabinet", "Templates", "Marketing Templates"), os.ModePerm)
+		os.MkdirAll(path.Join(params.Path, projectName, "FileCabinet", "Templates", "E-mail Templates"), os.ModePerm)
+
+		deployXML = `
+			<deploy>
+				<configuration>
+						<path>~/AccountConfiguration/*</path>
+				</configuration>
+				<files>
+						<path>~/FileCabinet/SuiteScripts/*</path>
+				</files>
+				<objects>
+						<path>~/Objects/*</path>
+				</objects>
+			</deploy>
+		`
+		manifestXML = fmt.Sprintf(`
+			<manifest projecttype="ACCOUNTCUSTOMIZATION">
+					<projectname>%s</projectname>
+					<frameworkversion>1.0</frameworkversion>
+					<dependencies>
+							<features>
+									<feature required="true">CUSTOMRECORDS</feature>
+									<feature required="true">SERVERSIDESCRIPTING</feature>
+									<feature required="false">CREATESUITEBUNDLES</feature>
+							</features>
+					</dependencies>
+			</manifest>
+		`, params.Name)
+
 	case "2":
-		sequence = append(sequence, params.PublisherID, params.ID, params.Name, params.Version, "")
 		fileBaseSuffix = filepath.Join("FileCabinet", "SuiteApps")
 		projectType = "SUITEAPP"
 		projectName = strings.Join([]string{params.PublisherID, params.ID}, ".")
+
+		os.MkdirAll(path.Join(params.Path, projectName, "InstallationPreferences"), os.ModePerm)
+		os.MkdirAll(path.Join(params.Path, projectName, fileBaseSuffix, projectName, ".attributes"), os.ModePerm)
+
+		deployXML = fmt.Sprintf(`
+			<deploy>
+				<files>
+						<path>~/FileCabinet/SuiteApps/%s/*</path>
+				</files>
+				<objects>
+						<path>~/Objects/*</path>
+				</objects>
+			</deploy>
+		`, projectName)
+
+		manifestXML = fmt.Sprintf(`
+			<manifest projecttype="SUITEAPP">
+					<publisherid>%s</publisherid>
+					<projectid>%s</projectid>
+					<projectname>%s</projectname>
+					<projectversion>%s<projectversion>
+					<frameworkversion>1.0</frameworkversion>
+					<dependencies>
+							<features>
+									<feature required="true">CUSTOMRECORDS</feature>
+									<feature required="true">SERVERSIDESCRIPTING</feature>
+									<feature required="false">CREATESUITEBUNDLES</feature>
+							</features>
+					</dependencies>
+			</manifest>
+		`, params.PublisherID, params.ID, params.Name, params.Version)
+
 	default:
 		lib.PrFatalf("Project type has to be either \"1\" or \"2\"!\n")
 	}
 
-	s := strings.Join(sequence, "\n")
-	prompt := strings.Join([]string{kind, s}, " ")
-
 	os.Remove(filepath.Clean(filepath.Join(params.Path, projectName)))
+
+	ioutil.WriteFile(filepath.Join(params.Path, projectName, "deploy.xml"), []byte(deployXML), os.ModePerm)
+	ioutil.WriteFile(filepath.Join(params.Path, projectName, "manifest.xml"), []byte(manifestXML), os.ModePerm)
 
 	if lib.IsVerbose {
 		lib.PrNoticeF("Creating project\t\"%s %s\"\n", projectType, projectName)
 	}
-	execute("sh", lib.SdfCliCreateProject, "", prompt, params.Path, false)
 
 	dir := filepath.Join(params.Path, projectName)
 

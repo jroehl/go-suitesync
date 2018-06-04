@@ -12,7 +12,6 @@ func InitEnv() {
 
 	Dependencies = path.Join(".dependencies")
 	SdfCli = path.Join(Dependencies, "sdfcli")
-	SdfCliCreateProject = path.Join(Dependencies, "sdfcli-createproject")
 	CliCache = path.Join(Dependencies, ".clicache")
 	Restlet = path.Join(Dependencies, "restlet", "project")
 
@@ -25,9 +24,6 @@ func InitEnv() {
 		log.Fatal(err)
 	}
 
-	if _, err := os.Stat(SdfCliCreateProject); os.IsNotExist(err) {
-		log.Fatal(err)
-	}
 }
 
 func initDependencies() {

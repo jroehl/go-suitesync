@@ -5,11 +5,10 @@ var (
 	// Credentials for export
 	Creds Credentials
 	// paths to deps
-	Dependencies        string
-	SdfCli              string
-	SdfCliCreateProject string
-	CliCache            string
-	Restlet             string
+	Dependencies string
+	SdfCli       string
+	CliCache     string
+	Restlet      string
 	// IsVerbose variable for export
 	IsVerbose = false
 	// YesRequired - methods that require the YES prompt
