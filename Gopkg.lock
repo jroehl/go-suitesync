@@ -3,12 +3,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/buger/goterm"
-  packages = ["."]
-  revision = "6d19e6a8df12fdfc44a90a24b677a6d04a80b91f"
-
-[[projects]]
-  branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
   revision = "02af3965c54e8cacf948b97fef38925c4120652c"
@@ -31,15 +25,9 @@
   revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
   version = "v1.20.0"
 
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
-  revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "127154f9f9d346d938ac713b939865478c05a6d539485d2ba7304bfbee514903"
+  inputs-digest = "89e146ca0747d1d4dd14d6c30742f5edd8a1beb867be4756453ad568d24b3901"
   solver-name = "gps-cdcl"
   solver-version = 1

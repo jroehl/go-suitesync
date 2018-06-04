@@ -10,7 +10,6 @@ import (
 	"github.com/jroehl/go-suitesync/restlet"
 	"github.com/jroehl/go-suitesync/sdf"
 
-	tm "github.com/buger/goterm"
 	"github.com/jroehl/go-suitesync/lib"
 	"github.com/urfave/cli"
 )
@@ -25,8 +24,7 @@ func before(c *cli.Context) error {
 	lib.IsVerbose = c.GlobalBool("verbose")
 	if c.GlobalBool("verbose") {
 		fmt.Println()
-		tm.Println(tm.Color(tm.Bold("RUNNING VERBOSE MODE"), tm.RED))
-		tm.Flush()
+		fmt.Println("RUNNING VERBOSE MODE")
 	}
 	return nil
 }
