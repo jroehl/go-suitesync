@@ -1,0 +1,21 @@
+# .goreleaser.yml
+before:
+  hooks:
+    - make clean
+    - make pack-restlet
+# Build customization
+builds:
+  - binary: suitesync
+    goos:
+      # - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+# Archive customization
+archive:
+  format: tar.gz
+  files:
+    - restlet.tar.gz
+    - README.md
+    - ci/circleci-example.yml

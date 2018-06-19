@@ -1,0 +1,71 @@
+---
+# Example of cirleci deployment script with go-suitesync
+version: 2
+defaults: &defaults
+  docker:
+    - image: circleci/openjdk:8-jdk-browsers
+      environment:
+        # these are used to download the release - must not be changed
+        REPO_OWNER: jroehl
+        REPO: go-suitesync
+        EXECUTABLE: suitesync
+        DOWNLOAD_RELEASE_GIST: https://gist.github.com/jroehl/3de9407adebee7c1e845f0c52b5a8df3/raw/download-release.sh
+        SET_ENV_GIST: https://gist.githubusercontent.com/jroehl/30d8c212babd5414ad921a298bebec87/raw/set-circleci-env.sh
+jobs:
+  init:
+    <<: *defaults
+    steps:
+      # download the go-suitesync release
+      - run: curl -sL ${DOWNLOAD_RELEASE_GIST} | bash
+      # initialize suitesync
+      - run: .suitesync/suitesync -v init
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .suitesync
+  deploy-restlet:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      # set the environment variables NSCONF_ACCOUNT is set to branchname_NSCONF_ACCOUNT if it exists etc.
+      - run: curl -sL ${SET_ENV_GIST} | bash
+      - run: echo "Deploying to account \"${NSCONF_ACCOUNT}\""
+      # upload restlet
+      - run: .suitesync/suitesync -v upload restlet
+  deploy:
+    <<: *defaults
+    steps:
+      # get github repo content
+      - checkout
+      - attach_workspace:
+          at: .
+      # set the environment variables NSCONF_ACCOUNT is set to branchname_NSCONF_ACCOUNT if it exists etc.
+      - run: curl -sL ${SET_ENV_GIST} | bash
+      - run: echo "Deploying to account \"${NSCONF_ACCOUNT}\""
+      # sync directories
+      - run: .suitesync/suitesync -v sync ${RELATIVE_SRC} ${ABSOLUTE_DST}
+
+workflows:
+  version: 2
+  main_workflow:
+    jobs:
+      - init:
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-restlet:
+          requires:
+            - init
+          filters:
+            branches:
+              only:
+                - master
+      - deploy:
+          requires:
+            - deploy-restlet
+          filters:
+            branches:
+              only:
+                - master

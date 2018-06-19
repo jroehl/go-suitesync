@@ -1,0 +1,66 @@
+version: 2
+defaults: &defaults
+  docker:
+    - image: circleci/golang:1.10
+  working_directory: /go/src/github.com/jroehl/go-suitesync
+  environment:
+    NSCONF_ACCOUNT: account
+    NSCONF_EMAIL: email
+    NSCONF_REALM: system.realm
+    NSCONF_CLITOKEN: b8d3596db885fd1c4be5cccccd89a78ebb97147409d0c8e1832014c7cd242e753158638f039f11bd27784269942e24e67b10d12e05eca4c487cc65cc96c7b22c
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            curl -L https://github.com/golang/dep/raw/master/install.sh | sh
+            dep ensure
+      - run: make test
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run: make pack-restlet
+      - run: make build
+      - run: ./suitesync -v init
+  release:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run: git reset --hard origin/master
+      - run: make release
+workflows:
+  version: 2
+  test-build-release:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*/
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*/
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*/
