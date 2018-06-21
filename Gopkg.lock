@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/beevik/etree"
+  packages = ["."]
+  revision = "9d7e8feddccb4ed1b8afb54e368bd323d2ff652c"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/cavaliercoder/grab"
   packages = ["."]
   revision = "466b5c0dd1d077be6de521d4e753734b17899a4d"
@@ -70,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4bcf69564ad65a3e75f2fb96ea25602cebd9078b91cb9a519dabe1929f2a7004"
+  inputs-digest = "2e78052864aa9ba66bfc1eecae3ec4ea10dff860243f73ec98b4f946f09edb8f"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,7 +1,7 @@
 <restlet scriptid="customscript_suitesync_restlet">
   <deletefunction></deletefunction>
   <description>The RESTlet that is used to supply go-suitesync with the ability to delete files</description>
-  <getfunction></getfunction>
+  <getfunction>get</getfunction>
   <isinactive>F</isinactive>
   <name>suitesync-restlet</name>
   <notifyadmins>F</notifyadmins>
@@ -20,7 +20,7 @@
       <isdeployed>T</isdeployed>
       <loglevel>ERROR</loglevel>
       <status>RELEASED</status>
-      <title>go-suitesync-restlet</title>
+      <title>suitesync-restlet</title>
     </scriptdeployment>
   </scriptdeployments>
 </restlet>

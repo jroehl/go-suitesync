@@ -225,6 +225,13 @@ define([ 'N/log', 'N/file', 'N/record', 'N/search' ], function (log, file, recor
 
   return {
     // ROUTER
+    get: function get() {
+      return {
+        code: 200,
+        status: 'RESTLET_EXISTS',
+        message: new Date().getTime().toString().substring(0, 10) + ' | The suitesync restlet is setup and healthy',
+      };
+    },
     post: function post(res) {
       var action = res.action;
       try {

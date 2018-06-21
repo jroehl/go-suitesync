@@ -160,6 +160,7 @@ func sanitizeCredentials() (creds map[string]string) {
 	} else {
 		PrFatalf("Either \"%s\" or \"%s\", \"%s\", \"%s\" and \"%s\" env variables have to be defined\n", CliToken, ConsumerKey, ConsumerSecret, TokenID, TokenSecret)
 	}
+
 	return
 }
 

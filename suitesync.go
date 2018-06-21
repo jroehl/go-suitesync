@@ -85,7 +85,7 @@ func main() {
 
 	app.Name = "suitesync"
 	app.Usage = "a netsuite filehandling cli"
-	app.Version = "0.0.1"
+	app.Version = "0.0.2"
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
@@ -95,6 +95,17 @@ func main() {
 	}
 
 	app.Commands = []cli.Command{
+		// {
+		// 	Name:      "test",
+		// 	Aliases:   []string{"t"},
+		// 	Before:    before,
+		// 	After:     after,
+		// 	ArgsUsage: "[src] (dest)",
+		// 	Action: func(c *cli.Context) error {
+		// 		suitetalk.SOAPRequest("searchFolder", "")
+		// 		return nil
+		// 	},
+		// },
 		{
 			Name:      "init",
 			Aliases:   []string{"i"},
@@ -141,11 +152,25 @@ func main() {
 					Name:     "restlet",
 					Aliases:  []string{"r"},
 					Usage:    "upload restlet to filecabinet",
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "force, f",
+							Usage: "Force deployment of restlet",
+						},
+					},
 					Action: func(c *cli.Context) error {
-						dir := lib.MkTempDir()
-						archiver.TarGz.Open(lib.RestletTar, dir)
-						sdf.UploadRestlet(path.Join(dir, "restlet", "project"))
-						lib.Remove(dir)
+						res, err := restlet.Healthcheck()
+						if c.Bool("force") || err != nil {
+							// no restlet available - deploy
+							fmt.Println(err)
+							dir := lib.MkTempDir()
+							archiver.TarGz.Open(lib.RestletTar, dir)
+							sdf.UploadRestlet(path.Join(dir, "restlet", "project"))
+							lib.Remove(dir)
+						} else {
+							// restlet exists and is healthy
+							lib.PrNoticeF("%s\n", res.Message)
+						}
 						return nil
 					},
 				},

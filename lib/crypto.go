@@ -101,7 +101,7 @@ func decrypt(passphrase, data []byte) ([]byte, error) {
 		cipher.Decrypt(decrypted[bs:be], data[bs:be])
 	}
 
-	return decrypted, nil
+	return pKCS5Trimming(decrypted), nil
 }
 
 // pKCS5Padding pad pkcs5 string
@@ -109,6 +109,12 @@ func pKCS5Padding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(ciphertext, padtext...)
+}
+
+// pKCS5Padding trim pkcs5 string
+func pKCS5Trimming(encrypt []byte) []byte {
+	padding := encrypt[len(encrypt)-1]
+	return encrypt[:len(encrypt)-int(padding)]
 }
 
 type ecb struct {
