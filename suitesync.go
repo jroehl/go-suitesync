@@ -1,78 +1,75 @@
+//+build !test
+
 package main
 
 import (
-	"fmt"
-	"log"
+	"errors"
+	"net/http"
 	"os"
-	"path"
+	"os/exec"
 	"path/filepath"
 	"runtime"
+	"time"
 
-	"github.com/jroehl/go-suitesync/restlet"
 	"github.com/jroehl/go-suitesync/sdf"
+	"github.com/jroehl/go-suitesync/suitetalk"
 	"github.com/kardianos/osext"
-	"github.com/mholt/archiver"
 
 	"github.com/jroehl/go-suitesync/lib"
 	"github.com/urfave/cli"
 )
 
-func init() {
-	if os.Getenv("GO_ENV") != "local" {
-		folderPath, err := osext.ExecutableFolder()
-		if err != nil {
-			log.Fatal(err)
-		}
-		lib.CurrentDir = folderPath
-	} else {
+type Exec struct {
+}
+
+var (
+	bash        = new(Exec)
+	errRequired = errors.New("required args missing")
+)
+
+type ExecCmd interface {
+	Run() error
+}
+
+func (bash *Exec) Command(name string, arg ...string) *exec.Cmd {
+	return exec.Command(name, arg...)
+}
+
+func before(c *cli.Context) error {
+	lib.IsVerbose = c.GlobalBool("verbose") || c.GlobalBool("debug")
+	lib.IsDebug = c.GlobalBool("debug")
+	if lib.IsVerbose {
+		lib.PrWarnf("\nRUNNING VERBOSE MODE\n")
+	}
+	if lib.IsDebug {
+		lib.PrWarnf("RUNNING DEBUG MODE\n")
+	}
+	if os.Getenv("GO_ENV") == "local" {
 		// get correct folder when running go run ...
 		_, callerFile, _, _ := runtime.Caller(0)
 		lib.CurrentDir = filepath.Dir(callerFile)
+	} else {
+		folderPath, _ := osext.ExecutableFolder()
+		lib.CurrentDir = folderPath
 	}
-	lib.InitEnv()
-}
-
-// https://github.com/sanathkr/go-npm
-
-func before(c *cli.Context) error {
-	lib.IsVerbose = c.GlobalBool("verbose")
-	if c.GlobalBool("verbose") {
-		fmt.Println()
-		fmt.Println("RUNNING VERBOSE MODE")
-	}
-	return nil
+	return lib.InitEnv(c.Command.FullName() == "issuetoken")
 }
 
 func after(c *cli.Context) error {
 	if lib.IsVerbose {
-		lib.PrNoticeF("Execution successful\n")
+		lib.PrResultf("\nExecution successful\n\n")
 	}
+
+	if !lib.IsDebug {
+		// cleanup of temporary files
+		dir := lib.MkTempDir()
+		res := lib.FindDir(filepath.Dir(dir), "suitesync_*")
+		for _, r := range res {
+			lib.Remove(r)
+		}
+	}
+
 	return nil
-}
-
-func checkRequired(s []string, i int, arg string) string {
-	if i >= len(s) {
-		lib.PrFatalf("Required arg \"%s\" is missing\n", arg)
-	}
-	return s[i]
-}
-
-func optArgDest(c *cli.Context, i int, def string) string {
-	if i >= len(c.Args()) {
-		return optDest(def, "")
-	}
-	return c.Args()[i]
-}
-
-func optDest(d string, def string) (s string) {
-	s = d
-	if s == "" {
-		s = def
-	}
-	if s == "" {
-		s, _ = os.Getwd()
-	}
-	return
 }
 
 func main() {
@@ -85,197 +82,124 @@ func main() {
 
 	app.Name = "suitesync"
 	app.Usage = "a netsuite filehandling cli"
-	app.Version = "0.0.2"
+	app.Version = "0.0.3"
+	app.After = after
+	app.Compiled = time.Now()
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:  "verbose, v",
 			Usage: "verbose output",
 		},
+		cli.BoolFlag{
+			Name:  "debug, d",
+			Usage: "debugging mode",
+		},
+	}
+
+	app.Authors = []cli.Author{
+		cli.Author{
+			Name:  "Johann Röhl",
+			Email: "mail@johannroehl.de",
+		},
 	}
 
 	app.Commands = []cli.Command{
-		// {
-		// 	Name:      "test",
-		// 	Aliases:   []string{"t"},
-		// 	Before:    before,
-		// 	After:     after,
-		// 	ArgsUsage: "[src] (dest)",
-		// 	Action: func(c *cli.Context) error {
-		// 		suitetalk.SOAPRequest("searchFolder", "")
-		// 		return nil
-		// 	},
-		// },
 		{
 			Name:      "init",
 			Aliases:   []string{"i"},
-			Usage:     "initialize sdfcli",
 			Before:    before,
-			After:     after,
+			Usage:     "Initialize suitesync",
 			ArgsUsage: "[src] (dest)",
 			Action: func(c *cli.Context) error {
-				lib.PrNoticeF("\ninit successful\n")
+				lib.PrNoticef("\ninit successful\n")
 				return nil
+			},
+		},
+		{
+			Name:      "issuetoken",
+			Aliases:   []string{"it"},
+			Before:    before,
+			Usage:     "Issue sdf cli token",
+			ArgsUsage: "[password]",
+			Action: func(c *cli.Context) error {
+				lib.PrNoticef("\ninit successful\n")
+				args := c.Args()
+				if args[0] == "" {
+					args[0] = lib.Credentials[lib.Password]
+				}
+				_, err := sdf.GenerateToken(bash, lib.CheckRequired(c.Args(), 0, "password"))
+				return err
 			},
 		},
 		{
 			Name:    "sync",
 			Aliases: []string{"s"},
-			Usage:   "sync two directories",
 			Before:  before,
-			After:   after,
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "bidirectional, b",
-					Usage: "Should it sync both ways (not only from local to remote filesystem set this flag)",
-				},
-			},
-			ArgsUsage: "[src] (dest)",
+			Usage:   "Sync two directories (creates hash file)",
+			// Flags: []cli.Flag{
+			// 	cli.BoolFlag{
+			// 		Name:  "bidirectional, b",
+			// 		Usage: "Sync both ways (local-remote / remote-local filesystem)",
+			// 	},
+			// },
+			ArgsUsage: "[src] [dest]",
 			Action: func(c *cli.Context) error {
-				sdf.Sync(
-					checkRequired(c.Args(), 0, "src"),
-					optArgDest(c, 1, ""),
-					c.Bool("bidirectional"),
+				_, _, _, _, err := sdf.Sync(
+					bash,
+					http.DefaultClient,
+					lib.CheckRequired(c.Args(), 0, "src"),
+					lib.CheckRequired(c.Args(), 1, "dest"),
+					false, // c.Bool("bidirectional"),
+					nil,
 				)
-				return nil
+				return err
 			},
 		},
 		{
-			Name:    "upload",
-			Aliases: []string{"ul"},
-			Usage:   "upload files/directories or restlet to filecabinet",
-			Before:  before,
-			After:   after,
-			Subcommands: []cli.Command{
-				{
-					Category: "upload",
-					Name:     "restlet",
-					Aliases:  []string{"r"},
-					Usage:    "upload restlet to filecabinet",
-					Flags: []cli.Flag{
-						cli.BoolFlag{
-							Name:  "force, f",
-							Usage: "Force deployment of restlet",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						res, err := restlet.Healthcheck()
-						if c.Bool("force") || err != nil {
-							// no restlet available - deploy
-							fmt.Println(err)
-							dir := lib.MkTempDir()
-							archiver.TarGz.Open(lib.RestletTar, dir)
-							sdf.UploadRestlet(path.Join(dir, "restlet", "project"))
-							lib.Remove(dir)
-						} else {
-							// restlet exists and is healthy
-							lib.PrNoticeF("%s\n", res.Message)
-						}
-						return nil
-					},
-				},
-				{
-					Category:  "upload",
-					Name:      "dir",
-					Usage:     "upload directory to filecabinet",
-					Aliases:   []string{"d"},
-					ArgsUsage: "[src] [dest]",
-					Action: func(c *cli.Context) error {
-						sdf.UploadDir(
-							checkRequired(c.Args(), 0, "src"),
-							optArgDest(c, 1, lib.Credentials[lib.RootPath]),
-						)
-						return nil
-					},
-				},
-				{
-					Category: "upload",
-					Name:     "files",
-					Aliases:  []string{"f"},
-					Usage:    "upload files to filecabinet",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "root, r",
-							Usage: "root directory that is trimmed from local filepath",
-						},
-						cli.StringFlag{
-							Name:  "dest, d",
-							Usage: "destination directory in filecabinet",
-						},
-					},
-					ArgsUsage: "[files]",
-					Action: func(c *cli.Context) error {
-						if c.String("root") == "" {
-							lib.PrFatalf("Required flag \"root\" is missing\n")
-						}
-						if !c.Args().Present() {
-							lib.PrFatalf("Required args (files) missing\n")
-						}
-						sdf.UploadFiles(
-							c.String("root"),
-							c.Args(),
-							optDest(c.String("dest"), lib.Credentials[lib.RootPath]),
-						)
-						return nil
-					},
-				},
+			Name:      "upload",
+			Aliases:   []string{"u"},
+			Before:    before,
+			Usage:     "Upload files and/or directories to filecabinet directory",
+			ArgsUsage: "[src...] [dest]",
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				if !args.Present() || len(args) < 2 {
+					return errRequired
+				}
+				dest, srcs := args[len(args)-1:][0], args[:len(args)-1]
+				_, err := sdf.Upload(bash, srcs, dest)
+				return err
 			},
 		},
 		{
-			Name:    "download",
-			Aliases: []string{"dl"},
-			Usage:   "options for task templates",
-			Before:  before,
-			After:   after,
-			Subcommands: []cli.Command{
-				{
-					Category:  "download",
-					Name:      "dir",
-					Usage:     "Download directory from filecabinet to local filesystem",
-					ArgsUsage: "[src] [dest]",
-					Aliases:   []string{"d"},
-					Action: func(c *cli.Context) error {
-						sdf.DownloadDir(
-							checkRequired(c.Args(), 0, "src"),
-							optArgDest(c, 1, ""),
-						)
-						return nil
-					},
-				},
-				{
-					Category:  "download",
-					Name:      "files",
-					Aliases:   []string{"f"},
-					Usage:     "Download files from filecabinet to local filesystem",
-					ArgsUsage: "[files]",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "dest, d",
-							Usage: "Destination directory in filecabinet",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						if !c.Args().Present() {
-							lib.PrFatalf("Required args (files) missing\n")
-						}
-						sdf.DownloadFiles(c.Args(), optDest(c.String("dest"), ""))
-						return nil
-					},
-				},
+			Name:      "download",
+			Aliases:   []string{"d"},
+			Before:    before,
+			Usage:     "Download files and/or directories to local filesystem",
+			ArgsUsage: "[src...] [dest]",
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				if !args.Present() || len(args) < 2 {
+					return errRequired
+				}
+				dest, srcs := args[len(args)-1:][0], args[:len(args)-1]
+				_, err := sdf.Download(bash, http.DefaultClient, srcs, dest)
+				return err
 			},
 		},
 		{
 			Name:      "delete",
-			Aliases:   []string{"d"},
-			Usage:     "delete files and/or directories in filecabinet",
-			ArgsUsage: "[files|dirs]",
+			Aliases:   []string{"del"},
 			Before:    before,
-			After:     after,
+			Usage:     "Delete files and/or directories in filecabinet",
+			ArgsUsage: "[files...|dirs...]",
 			Action: func(c *cli.Context) error {
 				if !c.Args().Present() {
-					lib.PrFatalf("Required args (files/dirs) missing\n")
+					return errRequired
 				}
-				restlet.Delete(c.Args())
+				res, _ := suitetalk.DeleteRequest(http.DefaultClient, c.Args())
+				lib.PrintResponse("Delete results", res)
 				return nil
 			},
 		},
@@ -283,6 +207,6 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		lib.PrFatalf("\n%s\n", err.Error())
 	}
 }

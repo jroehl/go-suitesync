@@ -2,6 +2,8 @@ package lib
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -16,36 +18,22 @@ func TestEncryptCliToken(t *testing.T) {
 	creds[TokenID] = tokenID
 	creds[TokenSecret] = tokenSecret
 	EncryptCliToken(currentKey, creds)
-	if creds[CliToken] != encryptionResult {
-		t.Errorf("Encryption failed, got: %s, want: %s.", creds[CliToken], encryptionResult)
-	}
+	assert.Equal(t, encryptionResult, creds[CliToken])
 }
 
 func TestDecryptCliToken(t *testing.T) {
 	creds := make(map[string]string)
 	creds[CliToken] = encryptionResult
 	DecryptCliToken(currentKey, creds)
-	if creds[TokenID] != tokenID {
-		t.Errorf("Decryption failed, TokenID => got: %s, want: %s.", creds[TokenID], tokenID)
-	}
-	if creds[TokenSecret] == "" {
-		t.Errorf("Decryption failed, TokenSecret => got: %s, want: %s.", creds[TokenSecret], tokenSecret)
-	}
-	if creds[ConsumerKey] == "" {
-		t.Errorf("Decryption failed, ConsumerKey => got: %s.", creds[ConsumerKey])
-	}
-	if creds[ConsumerSecret] == "" {
-		t.Errorf("Decryption failed, ConsumerSecret => got: %s.", creds[ConsumerSecret])
-	}
+	assert.Equal(t, tokenID, creds[TokenID])
+	assert.Equal(t, tokenSecret, creds[TokenSecret])
+	assert.NotZero(t, creds[ConsumerKey])
+	assert.NotZero(t, creds[ConsumerSecret])
 }
 
 func TestDecryptCliTokenFail(t *testing.T) {
 	creds := make(map[string]string)
 	creds[CliToken] = encryptionResult
 	err := DecryptCliToken("non-existing-key", creds)
-	if err == nil {
-		t.Errorf("Fail-decryption failed, Error => got: %s, want: %s.", "nil", "\"NSCONF_CLITOKEN\" does not contain secrets for \"non, existing, key\"")
-	}
+	assert.EqualError(t, err, "\"NSCONF_CLITOKEN\" does not contain secrets for \"non, existing, key\"")
 }
-
-// func TestDecryptCliToken

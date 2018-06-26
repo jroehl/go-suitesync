@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Header>
+    <platformMsgs:documentInfo xmlns:platformMsgs="urn:messages_2018_1.platform.webservices.netsuite.com">
+      <platformMsgs:nsId>WEBSERVICES_1746425_06232018738446540723532821_be1a7a9276698</platformMsgs:nsId>
+    </platformMsgs:documentInfo>
+  </soapenv:Header>
+  <soapenv:Body>
+    <deleteListResponse xmlns="urn:messages_2018_1.platform.webservices.netsuite.com">
+      <writeResponseList>
+        <platformCore:status isSuccess="true" 
+          xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com"/>
+        <writeResponse>
+          <platformCore:status isSuccess="false" 
+            xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com">
+            <platformCore:statusDetail type="ERROR">
+              <platformCore:code>RCRD_DSNT_EXIST</platformCore:code>
+              <platformCore:message>That record does not exist.</platformCore:message>
+            </platformCore:statusDetail>
+          </platformCore:status>
+          <baseRef internalId="123456" type="folder" xsi:type="platformCore:RecordRef" 
+            xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com"/>
+        </writeResponse>
+        <writeResponse>
+          <platformCore:status isSuccess="false" 
+            xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com">
+            <platformCore:statusDetail type="ERROR">
+              <platformCore:code>MEDIA_NOT_FOUND</platformCore:code>
+              <platformCore:message>Media item not found 999999</platformCore:message>
+            </platformCore:statusDetail>
+          </platformCore:status>
+          <baseRef internalId="999999" type="file" xsi:type="platformCore:RecordRef" 
+            xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com"/>
+        </writeResponse>
+        <writeResponse>
+          <platformCore:status isSuccess="true" 
+            xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com"/>
+          <baseRef internalId="1221" type="file" xsi:type="platformCore:RecordRef" 
+            xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com"/>
+        </writeResponse>
+      </writeResponseList>
+    </deleteListResponse>
+  </soapenv:Body>
+</soapenv:Envelope>

@@ -14,6 +14,12 @@
   version = "v2.0.0"
 
 [[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/dsnet/compress"
   packages = [
@@ -25,12 +31,6 @@
     "internal/prefix"
   ]
   revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/gomodule/oauth1"
-  packages = ["oauth"]
-  revision = "618665f0cf72c99a68ab289314ee57992772e524"
 
 [[projects]]
   name = "github.com/joho/godotenv"
@@ -45,6 +45,12 @@
   revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
 
 [[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
   name = "github.com/mholt/archiver"
   packages = ["."]
   revision = "cdc68dd1f170b8dfc1a0d2231b5bb0967ed67006"
@@ -55,6 +61,39 @@
   name = "github.com/nwaples/rardecode"
   packages = ["."]
   revision = "e06696f847aeda6f39a8f0b7cdff193b7690aef6"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
+
+[[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  revision = "477a77ecc69700c7cdeb1fa9e129548e1c1c393c"
+  version = "v0.1.1"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "mock"
+  ]
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
+
+[[projects]]
+  name = "github.com/ttacon/chalk"
+  packages = ["."]
+  revision = "76b3c8b611dea8f83e49e9ce81fc2b189e0ef3d2"
+  version = "v0.1"
 
 [[projects]]
   name = "github.com/ulikunitz/xz"
@@ -76,6 +115,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2e78052864aa9ba66bfc1eecae3ec4ea10dff860243f73ec98b4f946f09edb8f"
+  inputs-digest = "b1e4cd776fa3ea3790b7bd433bdb89f41ab2e5989294cf7b42a1f180e3e2b281"
   solver-name = "gps-cdcl"
   solver-version = 1

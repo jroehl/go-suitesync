@@ -28,7 +28,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: make pack-restlet
       - run: make build
       - run: ./suitesync -v init
   release:

@@ -6,7 +6,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -60,7 +59,7 @@ func DecryptCliToken(currentKey string, creds map[string]string) error {
 		s, e = readln(r)
 	}
 	if creds[TokenID] == "" {
-		return errors.New(fmt.Sprintf("\"%s\" does not contain secrets for \"%s\"", CliToken, strings.Replace(currentKey, "-", ", ", -1)))
+		return fmt.Errorf("\"%s\" does not contain secrets for \"%s\"", CliToken, strings.Replace(currentKey, "-", ", ", -1))
 	}
 	return nil
 }

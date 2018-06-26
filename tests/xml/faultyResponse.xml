@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Server.userException</faultcode>
+      <faultstring>The request could not be understood by the server due to malformed syntax.</faultstring>
+      <detail>
+        <platformFaults:invalidCredentialsFault xmlns:platformFaults="urn:faults_2018_1.platform.webservices.netsuite.com">
+          <platformFaults:code>USER_ERROR</platformFaults:code>
+          <platformFaults:message>The request could not be understood by the server due to malformed syntax.</platformFaults:message>
+        </platformFaults:invalidCredentialsFault>
+        <ns1:hostname xmlns:ns1="http://xml.apache.org/axis/">partners001.prod.sea.netledger.com</ns1:hostname>
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>

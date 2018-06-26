@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Hash struct
 type Hash struct {
 	Path string
 	Hash string

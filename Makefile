@@ -23,15 +23,12 @@ release: clean
 tag-version:
 	git tag ${VERSION} && git push origin ${VERSION}
 
-build: clean pack-restlet
+build: clean
 	go build -o suitesync suitesync.go
 
-pack-restlet:
-	tar -czf restlet.tar.gz ./restlet/project
-
 clean:
-	rm -rf suitesync restlet.tar.gz dist
+	rm -rf suitesync dist
 
 test:
-	go test ./... -cover -coverprofile=c.out
+	go test ./... -cover -coverprofile=c.out -tags test
 	go tool cover -html=c.out -o coverage.html

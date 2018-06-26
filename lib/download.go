@@ -1,7 +1,8 @@
+//+build !test
+
 package lib
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -23,7 +24,7 @@ func downloadFile(filepath string, uri string, redirect bool, ignoreStatus bool)
 	client := grab.NewClient()
 	req, _ := grab.NewRequest(filepath, uri)
 	// start download
-	PrNoticeF("\nDownloading %v...\n", req.URL())
+	PrResultf("\nDownloading %v...\n", req.URL())
 
 	if redirect {
 		// nasty java download site redirect
@@ -43,7 +44,7 @@ Loop:
 	for {
 		select {
 		case <-t.C:
-			fmt.Printf("\r transferred %v / %v bytes (%.2f%%)",
+			PrNoticef("\r   transferred %v / %v bytes (%.2f%%)",
 				resp.BytesComplete(),
 				resp.Size,
 				100*resp.Progress())
@@ -54,13 +55,13 @@ Loop:
 		}
 	}
 
-	fmt.Printf("\r transferred %v / %v bytes (100.00%%)\n", resp.Size, resp.Size)
+	PrNoticef("\r  transferred %v / %v bytes (100.00%%)\n", resp.Size, resp.Size)
 
 	// check for errors
 	if err := resp.Err(); err != nil {
 		PrFatalf("Download failed: %v\n", err)
 	}
 
-	PrNoticeF("Download saved to ./%v \n\n", resp.Filename)
+	PrResultf("Download saved to ./%v \n\n", resp.Filename)
 	return resp.Filename
 }

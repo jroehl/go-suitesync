@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -23,47 +21,58 @@ type ProjectParams struct {
 }
 
 type Project struct {
-	Type     string
-	Dir      string
-	Filebase string
-	Name     string
-	Params   ProjectParams
+	Type        string
+	Dir         string
+	FileCabinet string
+	Name        string
+	Params      ProjectParams
 }
 
-func GenerateToken() {
-	if lib.Credentials[lib.Password] == "" {
-		lib.PrFatalf("Environment variable \"%s\" is undefined\n", lib.Password)
-	}
-	f, err := buildFlags(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	res := execute(lib.SdfCli, "issuetoken", f, strings.Join([]string{lib.Credentials[lib.Password], "\n"}, ""), "", false)
-	lib.PrNoticeF(res)
+type FileTransfer struct {
+	Root string
+	Path string
+	Dest string
+	Src  string
 }
 
-// call sdfcli command
-func Sdf(command string, flags []Flag, ignore bool) string {
+type BashExec interface {
+	Command(name string, arg ...string) *exec.Cmd
+}
+
+// GenerateToken sdf cli token
+func GenerateToken(bash BashExec, password string) (res string, err error) {
+	token := lib.CheckCliCache()
+	if string(token) != "" {
+		return "", fmt.Errorf("Clitoken seems to be set up, aborting\n\"%s\"", token)
+	}
+	f, _ := buildFlags(nil)
+	execute(bash, lib.SdfCli, "issuetoken", f, strings.Join([]string{password, "\n"}, ""), "", false)
+	con, _ := ioutil.ReadFile(lib.CliCache)
+	res = string(con)
+	lib.PrResultf("\nToken\n%s\n", res)
+	return res, nil
+}
+
+// Command call sdfcli command
+func Command(bash BashExec, command string, flags []Flag, ignore bool) string {
 	f, err := buildFlags(flags)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-
-	res := execute(lib.SdfCli, command, f, "YES\n", "", ignore)
+	res := execute(bash, lib.SdfCli, command, f, "YES\n", "", ignore)
 	return res
 }
 
-func execute(bin string, cmd string, flags string, prompt string, dir string, ignore bool) string {
+func execute(bash BashExec, bin string, cmd string, flags string, prompt string, dir string, ignore bool) string {
 	cmdStr := strings.Join([]string{bin, cmd, flags}, " ")
 
 	if lib.IsVerbose {
-		fmt.Println()
-		lib.PrHeaderF("Executed command:\n")
-		fmt.Printf("  %s\n", cmdStr)
-		fmt.Println()
+		lib.PrHeaderf("\nExecuted command:\n")
+		fmt.Printf("%s\n\n", cmdStr)
 	}
 
-	proc := exec.Command(bin, cmd, flags)
+	proc := bash.Command(bin, cmd, flags)
+
 	if dir != "" {
 		proc.Dir = dir
 	}
@@ -77,30 +86,30 @@ func execute(bin string, cmd string, flags string, prompt string, dir string, ig
 	stdoutStr, stderrStr := string(stdout.Bytes()), string(stderr.Bytes())
 
 	if cmderr != nil {
-		lib.PrFatalf("\"%s\" failed with %s\n%s\n%s\n", cmdStr, cmderr, stdoutStr, stderrStr)
+		lib.PrFatalf("\n\"%s\" failed with %s\n%s\n%s\n", cmdStr, cmderr, stdoutStr, stderrStr)
 	}
 
 	if stderrStr != "" {
 		if ignore {
-			lib.PrNoticeF("%s\n", stderrStr)
+			lib.PrNoticef("\n%s\n", stderrStr)
 		} else {
-			lib.PrFatalf("%s\n", stderrStr)
+			lib.PrFatalf("\n%s\n", stderrStr)
 		}
 	}
 
 	return stdoutStr
 }
 
-// SdfCreateAccountCustomizationProject create an sdf account customization project
-func SdfCreateAccountCustomizationProject(name string, path string) Project {
+// CreateAccountCustomizationProject create an sdf account customization project
+func CreateAccountCustomizationProject(name string, path string) Project {
 	return sdfCreateProject("1", ProjectParams{
 		Name: name,
 		Path: path,
 	})
 }
 
-// SdfCreateSuiteAppProject create an sdf suite app project
-func SdfCreateSuiteAppProject(name string, path string, id string, version string, publisherId string) Project {
+// CreateSuiteAppProject create an sdf suite app project
+func CreateSuiteAppProject(name string, path string, id string, version string, publisherId string) Project {
 	return sdfCreateProject("2", ProjectParams{
 		Name:        name,
 		Path:        path,
@@ -118,17 +127,17 @@ func sdfCreateProject(kind string, params ProjectParams) Project {
 	deployXML := ""
 	manifestXML := ""
 
-	os.MkdirAll(path.Join(params.Path, projectName, "Objects"), os.ModePerm)
+	var dir string
 	switch kind {
 	case "1":
 		fileBaseSuffix = filepath.Join("FileCabinet", "SuiteScripts")
 		projectType = "ACCOUNTCUSTOMIZATION"
 		projectName = params.Name
-		os.MkdirAll(path.Join(params.Path, projectName, "AccountConfiguration"), os.ModePerm)
-		os.MkdirAll(path.Join(params.Path, projectName, fileBaseSuffix, ".attributes"), os.ModePerm)
-		os.MkdirAll(path.Join(params.Path, projectName, fileBaseSuffix, ".attributes"), os.ModePerm)
-		os.MkdirAll(path.Join(params.Path, projectName, "FileCabinet", "Templates", "Marketing Templates"), os.ModePerm)
-		os.MkdirAll(path.Join(params.Path, projectName, "FileCabinet", "Templates", "E-mail Templates"), os.ModePerm)
+		dir = filepath.Join(params.Path, projectName)
+		os.MkdirAll(filepath.Join(dir, "AccountConfiguration"), os.ModePerm)
+		os.MkdirAll(filepath.Join(dir, fileBaseSuffix, ".attributes"), os.ModePerm)
+		os.MkdirAll(filepath.Join(dir, "FileCabinet", "Templates", "Marketing Templates"), os.ModePerm)
+		os.MkdirAll(filepath.Join(dir, "FileCabinet", "Templates", "E-mail Templates"), os.ModePerm)
 
 		deployXML = `
 			<deploy>
@@ -161,9 +170,9 @@ func sdfCreateProject(kind string, params ProjectParams) Project {
 		fileBaseSuffix = filepath.Join("FileCabinet", "SuiteApps")
 		projectType = "SUITEAPP"
 		projectName = strings.Join([]string{params.PublisherID, params.ID}, ".")
-
-		os.MkdirAll(path.Join(params.Path, projectName, "InstallationPreferences"), os.ModePerm)
-		os.MkdirAll(path.Join(params.Path, projectName, fileBaseSuffix, projectName, ".attributes"), os.ModePerm)
+		dir = filepath.Join(params.Path, projectName)
+		os.MkdirAll(filepath.Join(dir, "InstallationPreferences"), os.ModePerm)
+		os.MkdirAll(filepath.Join(dir, fileBaseSuffix, projectName, ".attributes"), os.ModePerm)
 
 		deployXML = fmt.Sprintf(`
 			<deploy>
@@ -199,20 +208,19 @@ func sdfCreateProject(kind string, params ProjectParams) Project {
 
 	os.Remove(filepath.Clean(filepath.Join(params.Path, projectName)))
 
-	ioutil.WriteFile(filepath.Join(params.Path, projectName, "deploy.xml"), []byte(deployXML), os.ModePerm)
-	ioutil.WriteFile(filepath.Join(params.Path, projectName, "manifest.xml"), []byte(manifestXML), os.ModePerm)
+	os.MkdirAll(filepath.Join(dir, "Objects"), os.ModePerm)
+	ioutil.WriteFile(filepath.Join(dir, "deploy.xml"), []byte(deployXML), os.ModePerm)
+	ioutil.WriteFile(filepath.Join(dir, "manifest.xml"), []byte(manifestXML), os.ModePerm)
 
 	if lib.IsVerbose {
-		lib.PrNoticeF("Creating project\t\"%s %s\"\n", projectType, projectName)
+		lib.PrNoticef("Creating project \"%s %s\"\n", projectType, projectName)
 	}
 
-	dir := filepath.Join(params.Path, projectName)
-
 	return Project{
-		Type:     projectType,
-		Dir:      dir,
-		Filebase: filepath.Clean(path.Join(dir, fileBaseSuffix)),
-		Name:     projectName,
-		Params:   params,
+		Type:        projectType,
+		Dir:         dir,
+		FileCabinet: filepath.Clean(filepath.Join(dir, "FileCabinet")),
+		Name:        projectName,
+		Params:      params,
 	}
 }

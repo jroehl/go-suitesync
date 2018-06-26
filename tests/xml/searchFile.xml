@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Header>
+    <platformMsgs:documentInfo xmlns:platformMsgs="urn:messages_2018_1.platform.webservices.netsuite.com">
+      <platformMsgs:nsId>WEBSERVICES_TSTDRV411742_06212018601356341139979712_a13e9488</platformMsgs:nsId>
+    </platformMsgs:documentInfo>
+  </soapenv:Header>
+  <soapenv:Body>
+    <searchResponse xmlns="urn:messages_2018_1.platform.webservices.netsuite.com">
+      <platformCore:searchResult xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com">
+        <platformCore:status isSuccess="true"/>
+        <platformCore:totalRecords>4</platformCore:totalRecords>
+        <platformCore:pageSize>1000</platformCore:pageSize>
+        <platformCore:totalPages>1</platformCore:totalPages>
+        <platformCore:pageIndex>1</platformCore:pageIndex>
+        <platformCore:searchId>WEBSERVICES_TSTDRV411742_06212018601356341139979712_a13e9488</platformCore:searchId>
+        <platformCore:searchRowList>
+          <platformCore:searchRow xsi:type="docFileCab:FileSearchRow" 
+            xmlns:docFileCab="urn:filecabinet_2018_1.documents.webservices.netsuite.com">
+            <docFileCab:basic xmlns:platformCommon="urn:common_2018_1.platform.webservices.netsuite.com">
+              <platformCommon:folder>
+                <platformCore:searchValue internalId="0"/>
+              </platformCommon:folder>
+              <platformCommon:internalId>
+                <platformCore:searchValue internalId="00"/>
+              </platformCommon:internalId>
+              <platformCommon:name>
+                <platformCore:searchValue>foobar.js</platformCore:searchValue>
+              </platformCommon:name>
+            </docFileCab:basic>
+          </platformCore:searchRow>
+          <platformCore:searchRow xsi:type="docFileCab:FileSearchRow" 
+            xmlns:docFileCab="urn:filecabinet_2018_1.documents.webservices.netsuite.com">
+            <docFileCab:basic xmlns:platformCommon="urn:common_2018_1.platform.webservices.netsuite.com">
+              <platformCommon:folder>
+                <platformCore:searchValue internalId="0"/>
+              </platformCommon:folder>
+              <platformCommon:internalId>
+                <platformCore:searchValue internalId="01"/>
+              </platformCommon:internalId>
+              <platformCommon:name>
+                <platformCore:searchValue>foo.js</platformCore:searchValue>
+              </platformCommon:name>
+            </docFileCab:basic>
+          </platformCore:searchRow>
+          <platformCore:searchRow xsi:type="docFileCab:FileSearchRow" 
+            xmlns:docFileCab="urn:filecabinet_2018_1.documents.webservices.netsuite.com">
+            <docFileCab:basic xmlns:platformCommon="urn:common_2018_1.platform.webservices.netsuite.com">
+              <platformCommon:folder>
+                <platformCore:searchValue internalId="1"/>
+              </platformCommon:folder>
+              <platformCommon:internalId>
+                <platformCore:searchValue internalId="10"/>
+              </platformCommon:internalId>
+              <platformCommon:name>
+                <platformCore:searchValue>bar.js</platformCore:searchValue>
+              </platformCommon:name>
+            </docFileCab:basic>
+          </platformCore:searchRow>
+          <platformCore:searchRow xsi:type="docFileCab:FileSearchRow" 
+            xmlns:docFileCab="urn:filecabinet_2018_1.documents.webservices.netsuite.com">
+            <docFileCab:basic xmlns:platformCommon="urn:common_2018_1.platform.webservices.netsuite.com">
+              <platformCommon:folder>
+                <platformCore:searchValue internalId="2"/>
+              </platformCommon:folder>
+              <platformCommon:internalId>
+                <platformCore:searchValue internalId="20"/>
+              </platformCommon:internalId>
+              <platformCommon:name>
+                <platformCore:searchValue>hashes.json</platformCore:searchValue>
+              </platformCommon:name>
+            </docFileCab:basic>
+          </platformCore:searchRow>
+        </platformCore:searchRowList>
+      </platformCore:searchResult>
+    </searchResponse>
+  </soapenv:Body>
+</soapenv:Envelope>

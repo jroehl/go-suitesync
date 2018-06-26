@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soapenv:Header>
+    <platformMsgs:documentInfo xmlns:platformMsgs="urn:messages_2018_1.platform.webservices.netsuite.com">
+      <platformMsgs:nsId>WEBSERVICES_1746425_06232018746696192612376104_21009ad2629a3</platformMsgs:nsId>
+    </platformMsgs:documentInfo>
+  </soapenv:Header>
+  <soapenv:Body>
+    <searchMoreWithIdResponse xmlns="">
+      <platformCore:searchResult xmlns:platformCore="urn:core_2018_1.platform.webservices.netsuite.com">
+        <platformCore:status isSuccess="true">
+          <platformCore:statusDetail type="ERROR">
+            <platformCore:code>INVALID_SEARCH_PAGE_INDEX</platformCore:code>
+            <platformCore:message>Invalid search page index.</platformCore:message>
+          </platformCore:statusDetail>
+        </platformCore:status>
+        <platformCore:totalRecords>48</platformCore:totalRecords>
+        <platformCore:pageSize>1000</platformCore:pageSize>
+        <platformCore:totalPages>1</platformCore:totalPages>
+        <platformCore:pageIndex>2</platformCore:pageIndex>
+        <platformCore:searchId>WEBSERVICES_1746425_06232018746679230245229468_14a94e2b9671a</platformCore:searchId>
+        <platformCore:searchRowList>
+          <platformCore:searchRow xsi:type="docFileCab:FolderSearchRow" 
+            xmlns:docFileCab="urn:filecabinet_2018_1.documents.webservices.netsuite.com">
+            <docFileCab:basic xmlns:platformCommon="urn:common_2018_1.platform.webservices.netsuite.com">
+              <platformCommon:internalId>
+                <platformCore:searchValue internalId="666"/>
+              </platformCommon:internalId>
+              <platformCommon:name>
+                <platformCore:searchValue>SMORE</platformCore:searchValue>
+              </platformCommon:name>
+            </docFileCab:basic>
+          </platformCore:searchRow>
+        </platformCore:searchRowList>
+      </platformCore:searchResult>
+    </searchMoreWithIdResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
