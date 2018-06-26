@@ -9,11 +9,11 @@ import (
 )
 
 func TestGenerateToken(t *testing.T) {
-	lib.CliCache = ".cliCache"
+	lib.CliCache = ".clicache"
 	res, err := GenerateToken(e, "123456")
 	assert.Equal(t, "", res)
 	assert.Nil(t, err)
-	os.Remove(".cliCache")
+	os.Remove(".clicache")
 }
 
 func TestCommand(t *testing.T) {

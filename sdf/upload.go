@@ -2,7 +2,6 @@ package sdf
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -88,7 +87,6 @@ func getDirUploads(src string, dest string) (uploads []FileTransfer) {
 	c, _ := lib.DirContent(src, dest, true, true)
 	for _, h := range c {
 		nr := lib.NormalizeRootPath(h.Path, src, dest)
-		fmt.Println(nr)
 		s := strings.Replace(nr, r, "", 1)
 		uploads = append(uploads, FileTransfer{Src: nr, Root: r, Path: s, Dest: dest})
 	}

@@ -125,7 +125,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				lib.PrNoticef("\ninit successful\n")
 				args := c.Args()
-				if args[0] == "" {
+				if len(args) == 0 {
 					args[0] = lib.Credentials[lib.Password]
 				}
 				_, err := sdf.GenerateToken(bash, lib.CheckRequired(c.Args(), 0, "password"))

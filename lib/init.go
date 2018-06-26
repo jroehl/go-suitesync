@@ -23,7 +23,7 @@ func InitEnv(skipAuthReq bool) (err error) {
 
 	Dependencies = path.Join(CurrentDir, ".dependencies")
 	SdfCli = path.Join(Dependencies, "sdfcli")
-	CliCache = path.Join(Dependencies, ".cliCache")
+	CliCache = path.Join(Dependencies, ".clicache")
 
 	if _, err := os.Stat(Dependencies); os.IsNotExist(err) {
 		err = initDependencies()

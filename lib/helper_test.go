@@ -175,7 +175,7 @@ func TestCopyFailDest(t *testing.T) {
 }
 
 func TestCheckCliCache(t *testing.T) {
-	CliCache = ".cliCache"
+	CliCache = ".clicache"
 	Credentials = map[string]string{}
 	Credentials[CliToken] = "123456"
 	res := CheckCliCache()
@@ -187,7 +187,7 @@ func TestCheckCliCache(t *testing.T) {
 }
 
 func TestCheckCliCacheNil(t *testing.T) {
-	CliCache = ".cliCache"
+	CliCache = ".clicache"
 	Credentials = map[string]string{}
 	Credentials[CliToken] = ""
 	res := CheckCliCache()

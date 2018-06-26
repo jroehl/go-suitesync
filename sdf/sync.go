@@ -2,7 +2,6 @@ package sdf
 
 import (
 	"errors"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -13,7 +12,6 @@ import (
 // Sync sync files with remote dir
 func Sync(bash BashExec, client suitetalk.HTTPClient, src string, dest string, bidirectional bool, rh []lib.Hash) (al []string, ar []string, dl []string, dr []string, err error) {
 	src = lib.AbsolutePath(src)
-	fmt.Println(lib.CheckDir(src))
 	if err := lib.CheckDir(src); err != nil {
 		return nil, nil, nil, nil, err
 	}
@@ -44,9 +42,6 @@ func Sync(bash BashExec, client suitetalk.HTTPClient, src string, dest string, b
 
 	sfp, sfh := mapkeys(lf)
 	hhp, hhh := mapkeys(rh)
-
-	fmt.Println(sfh)
-	fmt.Println(hhh)
 
 	// added local
 	_, ali := lib.Difference(sfh, hhh)
