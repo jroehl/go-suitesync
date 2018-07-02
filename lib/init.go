@@ -4,6 +4,7 @@ package lib
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -70,6 +71,9 @@ func initDependencies() error {
 		}
 	}
 
+	// needs to be rewritten because of windows formatting issues
+	ioutil.WriteFile(SdfCli, []byte("#!/bin/bash\nSDFSDK_PATH=/webdev/sdf/sdk/\nmvn -f $SDFSDK_PATH/pom.xml exec:java -Dexec.args=\"$*\""), os.ModePerm)
+
 	if !javaExists {
 		javaDir := FindDir(Dependencies, "jre*.*")[0]
 		javaHome := path.Join(javaDir, s)
@@ -98,7 +102,7 @@ func downloadDependencies(downloadMaven bool) (files []string) {
 	files = []string{
 		downloadFile(Dependencies, URLSdfCore, false, false),
 		downloadFile(Dependencies, URLSdfIde, false, false),
-		downloadFile(path.Join(Dependencies, "sdfcli-supplemental_18_1.tar.gz"), URLSdfSupplemental, false, true),
+		downloadFile(path.Join(Dependencies, "sdfcli-supplemental_18_2.tar.gz"), URLSdfSupplemental, false, true),
 	}
 	if downloadMaven {
 		files = append(files, downloadFile(Dependencies, URLMaven, false, false))
