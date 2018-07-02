@@ -34,8 +34,8 @@ const (
 	JavaSubDirMac     = "/Contents/Home"
 
 	// dependency urls
-	URLSdfCore         = "https://system.netsuite.com/download/ide/update_18_1/plugins/com.netsuite.ide.core_2018.1.1.jar"
-	URLSdfIde          = "https://system.netsuite.com/download/ide/update_18_1/plugins/com.netsuite.ide.eclipse.ws_2018.1.1.jar"
+	URLSdfCore         = "https://system.netsuite.com/download/ide/update_18_1/plugins/com.netsuite.ide.core_2018.1.2.jar"
+	URLSdfIde          = "https://system.netsuite.com/download/ide/update_18_1/plugins/com.netsuite.ide.eclipse.ws_2018.1.2.jar"
 	URLSdfSupplemental = "https://system.netsuite.com/core/media/media.nl?id=95083164&c=NLCORP&h=37e6a602c5c4fc0fb3e3&_xt=.gz"
 	URLMaven           = "http://artfiles.org/apache.org/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.tar.gz"
 )
