@@ -12,7 +12,6 @@ default: run
 
 install:
 	dep ensure
-	sh ./init.sh
 
 run:
 	GO_ENV=local go run suitesync.go

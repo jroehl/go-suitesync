@@ -35,7 +35,7 @@ A golang cli implementation of useful filehandling features between local filesy
 
 - Download [release](https://github.com/jroehl/go-suitesync/releases) for linux or mac
 - For convenience - add binary to directory included in `$PATH`
-- Run commands
+- Initialize dependencies `./suitesync -v init`
 
 ### Activate token based authentication & SuiteCloud Development Framework
 
@@ -223,13 +223,13 @@ If you need to set up different branches to deploy to different accounts you can
 To start building another branch the branch name has to be added to `config.yml`. At the end of the script the new branch name has to be added to every occurence of:
 
 ```yaml
-...
+
+---
 filters:
   branches:
     only:
       - master
       - new-branch-name
-...
 ```
 
 ### Variable names
