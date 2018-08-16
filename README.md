@@ -8,6 +8,7 @@ A golang cli implementation of useful filehandling features between local filesy
 
 - [GO-SuiteSync](#go-suitesync)
   - [Initial Setup](#initial-setup)
+    - [Installation](#installation)
     - [Activate token based authentication & SuiteCloud Development Framework](#activate-token-based-authentication--suitecloud-development-framework)
     - [Automatically generate credentials](#automatically-generate-credentials)
     - [Manually generate credentials](#manually-generate-credentials)
@@ -29,6 +30,12 @@ A golang cli implementation of useful filehandling features between local filesy
   - [TODO](#todo)
 
 ## Initial Setup
+
+### Installation
+
+- Download [release](https://github.com/jroehl/go-suitesync/releases) for linux or mac
+- For convenience - add binary to directory included in `$PATH`
+- Run commands
 
 ### Activate token based authentication & SuiteCloud Development Framework
 
