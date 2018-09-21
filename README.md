@@ -27,6 +27,7 @@ A golang cli implementation of useful filehandling features between local filesy
   - [Branch deploy](#branch-deploy)
     - [Config changes](#config-changes)
     - [Variable names](#variable-names)
+  - [Contributing](#contributing)
   - [TODO](#todo)
 
 ## Initial Setup
@@ -244,6 +245,10 @@ master_NSCONF_ACCOUNT=master-account
 # clitoken is used for development branch
 development_NSCONF_CLITOKEN=clitoken-development-branch
 ```
+
+## Contributing
+
+Please read [CONTRIBUTING.md](/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## TODO
 
