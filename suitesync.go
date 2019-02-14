@@ -189,6 +189,22 @@ func main() {
 			},
 		},
 		{
+			Name:      "list",
+			Aliases:   []string{"ls"},
+			Before:    before,
+			Usage:     "List files and directories from filecabinet",
+			ArgsUsage: "[fcDir]",
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				if !args.Present() || len(args) < 1 {
+					return errRequired
+				}
+				fcDir := args[len(args)-1:][0]
+				err := sdf.List(bash, http.DefaultClient, fcDir)
+				return err
+			},
+		},
+		{
 			Name:      "delete",
 			Aliases:   []string{"del"},
 			Before:    before,

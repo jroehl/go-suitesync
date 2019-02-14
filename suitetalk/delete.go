@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/jroehl/go-suitesync/lib"
@@ -19,7 +20,9 @@ func DeleteRequest(client HTTPClient, paths []string) ([]lib.DeleteResult, []*li
 
 	items := []*lib.SearchResult{}
 	for _, p := range paths {
-		if it, err := GetPath(client, p); it != nil {
+		np := strings.Split(p, "/")
+
+		if it, err := GetPath(client, strings.Join(np[:len(np)-1], "/")); it != nil {
 			items = append(items, it)
 			if it.IsDir {
 				items = append(items, FlattenChildren(it.Children)...)
@@ -48,13 +51,19 @@ func DeleteRequest(client HTTPClient, paths []string) ([]lib.DeleteResult, []*li
 
 	reqs, _ := soapDelete(items, chunkSize)
 	var res []lib.DeleteResult
-	for _, b := range reqs {
+	for i, b := range reqs {
+		if lib.IsVerbose {
+			lib.PrNoticef("%d/%d: DeleteRequest issued - \"%s\"\n", i+1, len(reqs), deleteList)
+		}
 		r := doRequest(client, b, deleteList)
 		parsed, err := parseSoapDelete(r)
 		if err != nil {
 			lib.PrFatalf("Error \"%s\" - %s", deleteList, err.Error())
 		}
 		res = append(res, parsed...)
+		if lib.IsVerbose {
+			lib.PrNoticef("%d/%d: DeleteRequest done - \"%s\"\n", i+1, len(reqs), deleteList)
+		}
 	}
 
 	return res, items

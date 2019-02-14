@@ -81,3 +81,18 @@ type SearchResult struct {
 	IsDir      bool
 	Path       string
 }
+
+type Attr struct {
+	Key   string
+	Value string
+}
+
+type SearchValue struct {
+	Inner string
+	Attrs []Attr
+}
+type SearchFilter struct {
+	Tag          string
+	Operator     string
+	SearchValues []SearchValue
+}

@@ -10,15 +10,15 @@ import (
 )
 
 // SearchRequest make search request
-func SearchRequest(client HTTPClient, command string) []lib.SearchResult {
+func SearchRequest(client HTTPClient, command string, f []lib.SearchFilter) []lib.SearchResult {
 	doc, body := soap()
 	sf := false
 	switch command {
 	case searchFolder:
 		sf = true
-		soapSearch(body, folderSearchAdvanced)
+		soapSearch(body, folderSearchAdvanced, f)
 	case searchFile:
-		soapSearch(body, fileSearchAdvanced)
+		soapSearch(body, fileSearchAdvanced, f)
 	default:
 		lib.PrFatalf("Command \"%s\" not implemented", command)
 	}
@@ -29,20 +29,31 @@ func SearchRequest(client HTTPClient, command string) []lib.SearchResult {
 	}
 
 	if lib.IsVerbose {
-		lib.PrNoticef("SearchRequest issued - \"%s\"\n", command)
+		lib.PrNoticef("%d/%d: \"%s\" - issued\n", 1, 1, command)
 	}
 
 	// doc.Indent(2)
 	// doc.WriteTo(os.Stdout)
 
 	res := doRequest(client, bytes, search)
+
+	// d, _ := parseByte(res)
+	// d.Indent(2)
+	// d.WriteTo(os.Stdout)
+
 	parsed, meta, err := parseSoapSearch(res, sf, false)
 	if err != nil {
 		lib.PrFatalf("Error \"%s\" - %s", search, err.Error())
 	}
+	if lib.IsVerbose {
+		lib.PrNoticef("%d/%d: \"%s\" - done\n", 1, 1, command)
+	}
 	// if results are paginated
 	if meta.TotalPages > 1 {
 		for i := 2; i < meta.TotalPages+1; i++ {
+			if lib.IsVerbose {
+				lib.PrNoticef("%d/%d: \"%s\" - issued\n", i-1, meta.TotalPages-1, searchMoreWithID)
+			}
 			b, _ := soapSearchMore(i, meta.SearchID)
 			r := doRequest(client, b, searchMoreWithID)
 			p, _, err := parseSoapSearch(r, sf, true)
@@ -50,6 +61,10 @@ func SearchRequest(client HTTPClient, command string) []lib.SearchResult {
 				lib.PrFatalf("Error \"%s\" id \"%s\" - %s", searchMoreWithID, meta.SearchID, err.Error())
 			}
 			parsed = append(parsed, p...)
+
+			if lib.IsVerbose {
+				lib.PrNoticef("%d/%d: \"%s\" - done\n", i-1, meta.TotalPages-1, searchMoreWithID)
+			}
 		}
 	}
 
@@ -77,7 +92,7 @@ func soapSearchMore(idx int, id string) ([]byte, *etree.Document) {
 }
 
 // Search soap search in filecabinet
-func soapSearch(body *etree.Element, qType string) {
+func soapSearch(body *etree.Element, qType string, f []lib.SearchFilter) {
 
 	search := body.CreateElement("search")
 	search.CreateAttr("xmlns", messages)
@@ -96,6 +111,24 @@ func soapSearch(body *etree.Element, qType string) {
 	}
 	colBasic.CreateElement("internalId").CreateAttr("xmlns", common)
 	colBasic.CreateElement("name").CreateAttr("xmlns", common)
+
+	if f != nil && len(f) > 0 {
+		criteria := searchRecord.CreateElement("q1:criteria")
+		critBasic := criteria.CreateElement("q1:basic")
+		for _, sf := range f {
+			el := critBasic.CreateElement(sf.Tag)
+			el.CreateAttr("xmlns", common)
+			el.CreateAttr("operator", sf.Operator)
+			for _, sv := range sf.SearchValues {
+				svEl := el.CreateElement("searchValue")
+				svEl.CreateAttr("xmlns", core)
+				svEl.CreateCharData(sv.Inner)
+				for _, t := range sv.Attrs {
+					svEl.CreateAttr(t.Key, t.Value)
+				}
+			}
+		}
+	}
 }
 
 func parseSoapSearch(xml []byte, searchFolder, searchMore bool) (res []lib.SearchResult, m lib.Meta, err error) {

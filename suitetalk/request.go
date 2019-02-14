@@ -49,6 +49,7 @@ func soap() (*etree.Document, *etree.Element) {
 }
 
 func doRequest(client HTTPClient, body []byte, action string) []byte {
+
 	url := strings.Join([]string{"https://webservices.", strings.Replace(lib.Credentials[lib.Realm], "system.", "", 1), "/services/NetSuitePort_2018_1"}, "")
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 
